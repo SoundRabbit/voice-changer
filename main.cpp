@@ -19,7 +19,7 @@ int main(){
 
 	// wavファイル読み込み（16bit・モノラル・リニアPCMのみ対応）
 	WavFile wav;
-	wav.load("test.wav");
+	wav.load(fn);
 
 	// fft用のバッファ（fftsgが使う）
 	const int n = 4096;
@@ -50,5 +50,5 @@ int main(){
 		}
 	);
 
-	wav.save("test-out.wav");
+	wav.save(fn+"-out.wav");
 }
