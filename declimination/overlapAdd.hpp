@@ -1,4 +1,4 @@
 #include <iterator>
 
-template<typename RandomAccessIterator, class WindowFunction, class Next>
-void overlapAdd(RandomAccessIterator first, RandomAccessIterator last,std::size_t width, WindowFunction wf, Next next);
+template<typename SampleType, typename RandomAccessIterator, class Wfunction1, class Next, class Wfunction2>
+void overlapAdd(RandomAccessIterator first, RandomAccessIterator last,std::size_t width, Wfunction1 wf1, Next next, Wfunction2 wf2);

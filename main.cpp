@@ -53,7 +53,8 @@ int main(){
 			}
 
 			copy(a.begin(),a.end(),first);
-		}
+		},
+		WindowFunction::blackman
 	);
 
 	wav.save(fn+"-out.wav");
