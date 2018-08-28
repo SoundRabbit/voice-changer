@@ -19,33 +19,39 @@ int main(){
 
 	// wavファイル読み込み（16bit・モノラル・リニアPCMのみ対応）
 	WavFile wav;
-	wav.load(fn);
+	if(!wav.load(fn)){
+		cout << "error at file input" << endl;
+		return 0;
+	}
 
 	// fft用のバッファ（fftsgが使う）
 	const int n = 4096;
 	int ip[n];
-	double w[n*2];
+	double w[n*8];
 
 	// 入力波に窓関数をかけて、再合成。
 	overlapAdd<double>(
 		wav.data.begin(), wav.data.end(),	// 処理範囲
 		n,									// 窓幅
-		WindowFunction::vorbis,				// 窓関数の種類
+		WindowFunction::rect,				// 窓関数の種類
 		[&](auto first, auto last){			// 窓関数がかかった波形への処理内容
 
 			//スペクトルの取得。（aのスペクトルはaに上書きされて出力される。）
 			vector<double> a(first, last);
-			vector<double> s(a.size(), 0);
+			vector<double> s(a.size()*2, 0);
 			ddct(n, -1, a.data(), ip, w);
 
-			// a → s の過程でスペクトルの加工
-			for(int i=0; i<a.size()/2; i++){
-				s[i*2] = a[i];
+			for(int i=0; i<a.size(); i++){
+				s[(int)(i*2)] += a[i];
+			}
+			// スペクトルの変更結果を反映
+			ddct(n*2, 1, s.data(), ip, w);
+
+			// 波長を短くする
+			for(int i=0; i<a.size(); i++){
+				a[i] = (s[2*i] + s[2*i+1])/2.0;
 			}
 
-			// スペクトルの変更結果を反映
-			a = s;
-			ddct(n, 1, a.data(), ip, w);
 			copy(a.begin(),a.end(),first);
 		}
 	);

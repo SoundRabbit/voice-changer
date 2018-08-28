@@ -28,7 +28,7 @@ void overlapAdd(RandomAccessIterator first, RandomAccessIterator last,std::size_
 
 
 		for(auto& s : buf){
-			*outputItr += s;
+			(*outputItr) += s;
 			outputItr++;
 		}
 		outputItr -= step;
