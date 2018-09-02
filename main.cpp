@@ -42,6 +42,15 @@ int main(){
 			vector<double> s(a.size()*2, 0);	// 変換後のスペクトルを入れる配列
 			ddct(n, -1, a.data(), ip, w);
 
+			// スペクトルを滑らかにする
+			constexpr int addNum = 8;
+			for(int i=0; i<a.size(); i++){
+				for(int j=i+1;j<i + addNum || j<a.size(); j++){
+					a[i] += a[j];
+				}
+				a[i] /= addNum;
+			}
+
 			// 極値の取得
 			vector<pair<int,double>> mms;
 			for(int i=1; i<a.size()-1; i++){
@@ -50,27 +59,12 @@ int main(){
 				}
 			}
 
-			// 極値を強度別に並び替え
-			sort(mms.begin(), mms.end(), [&](auto a, auto b)->bool{
-				return a.second != b.second ?
-					a.second > b.second : 
-					a.first > b.first;
-			});
-
 			// フィルタの作成
 			vector<double> filter(a.size(),0);
 
 			// 上位mmINum個の極値以外を除去するフィルタの作成
-			int counter = 0;
-			constexpr int mmINum = 30;
-			constexpr int minFreqency = 400;
-			constexpr int maxFreqency = 4000;
 			for(auto mm : mms){
-				if(counter >= mmINum){ break;}
-				if(wav.samplingRate / n * (mm.first + 1) < minFreqency){ continue;}
-				if(wav.samplingRate / n * (mm.first + 1) > maxFreqency){ continue;}
 				filter[mm.first] = 1;
-				counter++;
 			}
 
 			// 周波数を2倍にする

@@ -10,6 +10,14 @@ namespace WindowFunction{
 	constexpr auto bartlett = [](double x)->double{return 1 - 2 * abs(x - 0.5);};
 	constexpr auto blackman = [](double x)->double{return 0.42 - 0.5 * cos(2 * M_PI * x) + 0.08 * cos(4 * M_PI * x);};
 
+	class Gauss{
+	protected:
+		double sigma;
+	public:
+		Gauss(double s):sigma(s){}
+		double operator() (double x){return exp(pow(x,2)/pow(sigma,2));}
+	};
+
 	template<typename RandomAccessIterator, class Wfunction>
 	void apply(RandomAccessIterator first, RandomAccessIterator last, Wfunction wf);
 }
