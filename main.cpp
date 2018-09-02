@@ -50,13 +50,25 @@ int main(){
 				}
 			}
 
+			// 極値を強度別に並び替え
+			sort(mms.begin(), mms.end(), [&](auto a, auto b)->bool{
+				return a.second != b.second ?
+					a.second > b.second : 
+					a.first > b.first;
+			});
+
 			// フィルタの作成
 			vector<double> filter(a.size(),0);
 
-			// 極値以外を除去するフィルタの作成
+			// 上位mmINum個の極値以外を除去するフィルタの作成
 			int counter = 0;
+			constexpr int mmINum = 30;
+			constexpr int minFreqency = 400;
+			constexpr int maxFreqency = 4000;
 			for(auto mm : mms){
-				if(wav.samplingRate / n * (mm.first + 1) < 100){ continue;}
+				if(counter >= mmINum){ break;}
+				if(wav.samplingRate / n * (mm.first + 1) < minFreqency){ continue;}
+				if(wav.samplingRate / n * (mm.first + 1) > maxFreqency){ continue;}
 				filter[mm.first] = 1;
 				counter++;
 			}
