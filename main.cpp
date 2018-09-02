@@ -62,9 +62,9 @@ int main(){
 
 			// 上位mmINum個の極値以外を除去するフィルタの作成
 			int counter = 0;
-			constexpr int mmINum = 30;
-			constexpr int minFreqency = 400;
-			constexpr int maxFreqency = 4000;
+			constexpr int mmINum = 4;
+			constexpr int minFreqency = 100;
+			constexpr int maxFreqency = 3000;
 			for(auto mm : mms){
 				if(counter >= mmINum){ break;}
 				if(wav.samplingRate / n * (mm.first + 1) < minFreqency){ continue;}
