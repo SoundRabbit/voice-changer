@@ -5,6 +5,7 @@ extern "C"{
 #include "wavFile/wavFile.cpp"
 #include <algorithm>
 #include <iostream>
+#include <utility>
 #include <vector>
 
 #define _USE_MATH_DEFINES
@@ -36,14 +37,35 @@ int main(){
 		WindowFunction::rect,				// 窓関数の種類
 		[&](auto first, auto last){			// 窓関数がかかった波形への処理内容
 
-			//スペクトルの取得。（aのスペクトルはaに上書きされて出力される。）
-			vector<double> a(first, last);
-			vector<double> s(a.size()*2, 0);
+			//スペクトルの取得
+			vector<double> a(first, last);		// スペクトルを受け取る配列
+			vector<double> s(a.size()*2, 0);	// 変換後のスペクトルを入れる配列
 			ddct(n, -1, a.data(), ip, w);
 
-			for(int i=0; i<a.size(); i++){
-				s[(int)(i*2)] += a[i];
+			// 極値の取得
+			vector<pair<int,double>> mms;
+			for(int i=1; i<a.size()-1; i++){
+				if((a[i+1]-a[i])*(a[i]-a[i-1]) <= 0){
+					mms.push_back(make_pair(i, abs(a[i])));
+				}
 			}
+
+			// フィルタの作成
+			vector<double> filter(a.size(),0);
+
+			// 極値以外を除去するフィルタの作成
+			int counter = 0;
+			for(auto mm : mms){
+				if(wav.samplingRate / n * (mm.first + 1) < 100){ continue;}
+				filter[mm.first] = 1;
+				counter++;
+			}
+
+			// 周波数を2倍にする
+			for(int i=0; i<a.size(); i++){
+				s[(int)(i*2)] += a[i] * filter[i];
+			}
+
 			// スペクトルの変更結果を反映
 			ddct(n*2, 1, s.data(), ip, w);
 
