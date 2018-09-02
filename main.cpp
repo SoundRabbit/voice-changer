@@ -54,7 +54,9 @@ int main(){
 
 			copy(a.begin(),a.end(),first);
 		},
-		WindowFunction::blackman
+		[](double x)->double{
+			return WindowFunction::sine(x)*WindowFunction::sine(x);
+		}
 	);
 
 	wav.save(fn+"-out.wav");
